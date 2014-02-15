@@ -18,7 +18,9 @@ import random
 # Port should be 80, but since it needs root privileges,
 # let's use one above 1024
 
-myPort = 1234
+# myPort = 1234
+myPort = int (os.getenv["PORT"])
+print myPort
 mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 mySocket.bind(('localhost', myPort))
