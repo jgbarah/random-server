@@ -47,7 +47,7 @@ try:
 
 		# Resource name for next url
 		nextPage = str (random.randint (0,10000))
-		nextUrl = "http://localhost:" + str(myPort) + "/" + nextPage
+		nextUrl = "/" + nextPage
 		# HTML body of the page to serve
 		htmlBody = "<h1>It works!</h1>" + '<p>Next page: <a href="' \
 		    + nextUrl + '">' + nextPage + "</a></p>"
