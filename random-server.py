@@ -21,10 +21,11 @@ import random
 
 # myPort = 1234
 myPort = int (os.environ["PORT"])
+print "Hola"
 print myPort
 mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-mySocket.bind(('localhost', myPort))
+mySocket.bind(socket.gethostname(), myPort))
 
 # Queue a maximum of 10 TCP connection requests
 
