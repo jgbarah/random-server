@@ -1,1 +1,1 @@
-web: ./random-server.py
+web: python random-server.py
