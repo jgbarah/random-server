@@ -9,6 +9,7 @@
 #
 # Returns an HTML page with a random link
 
+import os
 import socket
 import random
 
