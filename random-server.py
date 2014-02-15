@@ -20,7 +20,7 @@ import random
 # let's use one above 1024
 
 # myPort = 1234
-myPort = int (os.getenv["PORT"])
+myPort = int (os.environ["PORT"])
 print myPort
 mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
