@@ -12,8 +12,9 @@
 import os
 import socket
 import random
+import datetime
 
-reqList = ()
+reqList = []
 
 # Create a TCP objet socket and bind it to a port
 # We bind to 'localhost', therefore only accepts connections from the
@@ -22,12 +23,12 @@ reqList = ()
 # let's use one above 1024
 
 # myPort = 1234
+myHost = socket.gethostname()
 myPort = int (os.environ["PORT"])
-print "Hola"
-print myPort
+print myHost, myPort
 mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-mySocket.bind((socket.gethostname(), myPort))
+mySocket.bind((myHost, myPort))
 
 # Queue a maximum of 10 TCP connection requests
 
@@ -46,11 +47,15 @@ while True:
 	print 'HTTP request received:'
 	recv = recvSocket.recv(2048)
 	print recv
-	reqList.add([str(datetime.datetime.now()), recv])
+	reqList.append((str(datetime.datetime.now()), recv))
 
 	resource = recv.split(" ", 2)[1]
 	if resource == "/list":
-		htmlBody = str(reqList)
+		htmlBody = "<ul>"
+		for entry in reqList:
+			htmlBody = htmlBody + "<li><b>" + str(entry[0]) + \
+			    "</b><br/>"+ entry[1] + "</li>\n"
+		htmlBody = htmlBody + "</ul>"
 	else:
 		# Resource name for next url
 		nextPage = str (random.randint (0,10000))
