@@ -44,7 +44,6 @@ try:
 		(recvSocket, address) = mySocket.accept()
 		print 'HTTP request received:'
 		recv = recvSocket.recv(2048)
-		print recv.split(" ",2)[0]
 		print recv
 
 		# Resource name for next url
