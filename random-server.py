@@ -49,8 +49,8 @@ while True:
 	print recv
 	reqList.append((str(datetime.datetime.now()), recv))
 
-	resource = recv.split(None, 2)[1]
-	if resource == "/list":
+	parts = recv.split(None, 2)
+	if (len(parts) > 1) and (parts[1] == "/list"):
 		htmlBody = "<ul>"
 		for entry in reqList:
 			htmlBody = htmlBody + "<li><b>" + str(entry[0]) + \
