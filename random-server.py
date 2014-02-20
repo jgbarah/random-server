@@ -38,25 +38,20 @@ random.seed()
 
 # Accept connections, read incoming data, and answer back an HTLM page
 #  (in a loop)
-try:
-	while True:
-		print 'Waiting for connections'
-		(recvSocket, address) = mySocket.accept()
-		print 'HTTP request received:'
-		recv = recvSocket.recv(2048)
-		print recv
+while True:
+	print 'Waiting for connections'
+	(recvSocket, address) = mySocket.accept()
+	print 'HTTP request received:'
+	recv = recvSocket.recv(2048)
+	print recv
 
-		# Resource name for next url
-		nextPage = str (random.randint (0,10000))
-		nextUrl = "/" + nextPage
-		# HTML body of the page to serve
-		htmlBody = "<h1>It works!</h1>" + '<p>Next page: <a href="' \
-		    + nextUrl + '">' + nextPage + "</a></p>"
-		recvSocket.send("HTTP/1.1 200 OK \r\n\r\n" +
-				"<html><body>" + htmlBody + "</body></html>" +
-				"\r\n")
-		recvSocket.close()
-
-except KeyboardInterrupt:
-	print "Closing binded socket"
-	mySocket.close()
+	# Resource name for next url
+	nextPage = str (random.randint (0,10000))
+	nextUrl = "/" + nextPage
+	# HTML body of the page to serve
+	htmlBody = "<h1>It works!</h1>" + '<p>Next page: <a href="' \
+	    + nextUrl + '">' + nextPage + "</a></p>"
+	recvSocket.send("HTTP/1.1 200 OK \r\n\r\n" +
+			"<html><body>" + htmlBody + "</body></html>" +
+			"\r\n")
+	recvSocket.close()
