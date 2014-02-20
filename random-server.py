@@ -39,13 +39,21 @@ mySocket.listen(5)
 # means time is used as seed (or OS supplied random seed).
 random.seed()
 
-# Accept connections, read incoming data, and answer back an HTLM page
-#  (in a loop)
-while True:
-	print 'Waiting for connections'
-	(recvSocket, address) = mySocket.accept()
+def attendReq (recvSocket):
 	print 'HTTP request received:'
-	recv = recvSocket.recv(2048)
+	# Now read until nothing is left
+	recv = ""
+	recvSocket.settimeout(0.2)
+	while True:
+		try:
+			read = recvSocket.recv(4096)
+			print "Read: ", read
+			if read:
+				recv = recv + read
+			else:
+				break
+		except socket.timeout:
+			break
 	print recv
 	reqList.append((str(datetime.datetime.now()), recv))
 
@@ -67,3 +75,13 @@ while True:
 			"<html><body>" + htmlBody + "</body></html>" +
 			"\r\n")
 	recvSocket.close()
+
+# Accept connections, read incoming data, and answer back an HTLM page
+#  (in a loop)
+try:
+	while True:
+		print 'Waiting for connections'
+		(recvSocket, address) = mySocket.accept()
+		attendReq (recvSocket)
+finally:
+	mySocket.close()
