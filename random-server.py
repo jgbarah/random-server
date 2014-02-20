@@ -1,13 +1,30 @@
 #!/usr/bin/python
 
+# Copyright (C) 2013 Bitergia
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
 #
 # Simple HTTP Server Random
 # Jesus M. Gonzalez-Barahona
 # jgb @ gsyc.es
-# TSAI and SAT subjects (Universidad Rey Juan Carlos)
-# September 2009
+# TSAI, SAT, SARO subjects (Universidad Rey Juan Carlos)
+# February 2014
 #
-# Returns an HTML page with a random link
+# Returns an HTML page with a random link, and provides some logging
+#
 
 import os
 import socket
@@ -85,10 +102,17 @@ def attendReq (recvSocket):
 	else:
 		htmlBody = htmlBody + "<div style='text-align:right'>" + \
 		    "<a href='/log'>Log</a></div>\n"
-	recvSocket.send("HTTP/1.1 200 OK \r\n\r\n" +
-			"<!DOCTYPE HTML><html><body>" + htmlBody +
-			"</body></html>" +
-			"\r\n")
+	httpResp = "HTTP/1.1 200 OK \r\n\r\n" + \
+	    "<!DOCTYPE HTML><html><body>" + htmlBody + \
+	    "</body></html>" + \
+	    "\r\n"
+	totalSent = 0
+	while totalSent < len(httpResp):
+		sent = recvSocket.send(httpResp[totalSent:])
+		if sent == 0:
+			# Connection broken, don't try to send more data
+			break
+		totalSent = totalSent + sent
 	recvSocket.close()
 
 # Accept connections, read incoming data, and answer back an HTLM page
