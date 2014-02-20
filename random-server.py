@@ -13,6 +13,8 @@ import os
 import socket
 import random
 
+reqList = ()
+
 # Create a TCP objet socket and bind it to a port
 # We bind to 'localhost', therefore only accepts connections from the
 # same machine
@@ -44,13 +46,18 @@ while True:
 	print 'HTTP request received:'
 	recv = recvSocket.recv(2048)
 	print recv
+	reqList.add([str(datetime.datetime.now()), recv])
 
-	# Resource name for next url
-	nextPage = str (random.randint (0,10000))
-	nextUrl = "/" + nextPage
-	# HTML body of the page to serve
-	htmlBody = "<h1>It works!</h1>" + '<p>Next page: <a href="' \
-	    + nextUrl + '">' + nextPage + "</a></p>"
+	resource = recv.split(" ", 2)[1]
+	if resource == "/list":
+		htmlBody = str(reqList)
+	else:
+		# Resource name for next url
+		nextPage = str (random.randint (0,10000))
+		nextUrl = "/" + nextPage
+		# HTML body of the page to serve
+		htmlBody = "<h1>It works!</h1>" + '<p>Next page: <a href="' \
+		    + nextUrl + '">' + nextPage + "</a></p>"
 	recvSocket.send("HTTP/1.1 200 OK \r\n\r\n" +
 			"<html><body>" + htmlBody + "</body></html>" +
 			"\r\n")
