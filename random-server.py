@@ -41,8 +41,11 @@ random.seed()
 
 def attendReq (recvSocket):
 	print 'HTTP request received:'
-	# Now read until nothing is left
 	recv = ""
+	# Now read until nothing is left, or 0.2 sec. passed
+	# I should read until the number of bytes specified by
+	# length header, but this works most of the time, and
+	# avoids a simple DoS by not seding the promised length
 	recvSocket.settimeout(0.2)
 	while True:
 		try:
@@ -54,17 +57,19 @@ def attendReq (recvSocket):
 				break
 		except socket.timeout:
 			break
-	print recv
+	# Append the received request with logging purposes
 	reqList.append((str(datetime.datetime.now()), recv))
 
 	parts = recv.split(None, 2)
 	if (len(parts) > 1) and (parts[1] == "/list"):
+		# /list received, answer with logs
 		htmlBody = "<ul>"
 		for entry in reqList:
 			htmlBody = htmlBody + "<li><b>" + str(entry[0]) + \
-			    "</b><br/>"+ entry[1] + "</li>\n"
+			    "</b><br/><pre>"+ entry[1] + "</pre></li>\n"
 		htmlBody = htmlBody + "</ul>"
 	else:
+		# Any other resource: new random link
 		# Resource name for next url
 		nextPage = str (random.randint (0,10000))
 		nextUrl = "/" + nextPage
