@@ -43,7 +43,8 @@ try:
 		print 'Waiting for connections'
 		(recvSocket, address) = mySocket.accept()
 		print 'HTTP request received:'
-		print recvSocket.recv(1024)
+		recv = recvSocket.recv(2048)
+		print recv.split(" ",2)[0]
 
 		# Resource name for next url
 		nextPage = str (random.randint (0,10000))
