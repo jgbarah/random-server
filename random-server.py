@@ -50,7 +50,6 @@ def attendReq (recvSocket):
 	while True:
 		try:
 			read = recvSocket.recv(4096)
-			print "Read: ", read
 			if read:
 				recv = recv + read
 			else:
@@ -61,23 +60,30 @@ def attendReq (recvSocket):
 	reqList.append((str(datetime.datetime.now()), recv))
 
 	parts = recv.split(None, 2)
-	if (len(parts) > 1) and (parts[1] == "/list"):
-		# /list received, answer with logs
-		htmlBody = "<ul>"
+	htmlList = ""
+	if (len(parts) > 1) and (parts[1] == "/log"):
+		# /log received, prepare logs
+		htmlList = "<p>Number of requests: " + \
+		    str(len(reqList)) + "</p>\n"
+		htmlList = htmlList + "<ul>"
 		for entry in reqList:
-			htmlBody = htmlBody + "<li><b>" + str(entry[0]) + \
+			htmlList = htmlList + "<li><b>" + str(entry[0]) + \
 			    "</b><br/><pre>"+ entry[1] + "</pre></li>\n"
-		htmlBody = htmlBody + "</ul>"
+		htmlList = htmlList + "</ul>"
+	# Any resource: new random link
+	nextPage = str (random.randint (0,10000))
+	nextUrl = "/" + nextPage
+	# HTML body of the page to serve
+	htmlBody = "<h1>It works!</h1>" + '<p>Next page: <a href="' \
+	    + nextUrl + '">' + nextPage + "</a></p>\n"
+	if htmlList:
+		htmlBody = htmlBody + "<h1>Log</h1>\n" + htmlList
 	else:
-		# Any other resource: new random link
-		# Resource name for next url
-		nextPage = str (random.randint (0,10000))
-		nextUrl = "/" + nextPage
-		# HTML body of the page to serve
-		htmlBody = "<h1>It works!</h1>" + '<p>Next page: <a href="' \
-		    + nextUrl + '">' + nextPage + "</a></p>"
+		htmlBody = htmlBody + "<div style='text-align:right'>" + \
+		    "<a href='/log'>Log</a></div>\n"
 	recvSocket.send("HTTP/1.1 200 OK \r\n\r\n" +
-			"<html><body>" + htmlBody + "</body></html>" +
+			"<!DOCTYPE HTML><html><body>" + htmlBody +
+			"</body></html>" +
 			"\r\n")
 	recvSocket.close()
 
