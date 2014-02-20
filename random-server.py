@@ -49,7 +49,7 @@ while True:
 	print recv
 	reqList.append((str(datetime.datetime.now()), recv))
 
-	resource = recv.split(" ", 2)[1]
+	resource = recv.split(None, 2)[1]
 	if resource == "/list":
 		htmlBody = "<ul>"
 		for entry in reqList:
