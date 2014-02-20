@@ -74,8 +74,12 @@ def attendReq (recvSocket):
 	nextPage = str (random.randint (0,10000))
 	nextUrl = "/" + nextPage
 	# HTML body of the page to serve
-	htmlBody = "<h1>It works!</h1>" + '<p>Next page: <a href="' \
-	    + nextUrl + '">' + nextPage + "</a></p>\n"
+	htmlBody = "<h1>The most amusing web site in the galaxy</h1>" + \
+	    "<p>Next page: <a href='" \
+	    + nextUrl + "'>" + nextPage + "</a></p>\n"
+	htmlBody = htmlBody + "<div style='text-align:right'>" + \
+	    "<a href='https://github.com/jgbarah/random-server'>" + \
+	    "Source code</a></div>\n"
 	if htmlList:
 		htmlBody = htmlBody + "<h1>Log</h1>\n" + htmlList
 	else:
