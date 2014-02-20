@@ -65,11 +65,11 @@ def attendReq (recvSocket):
 		# /log received, prepare logs
 		htmlList = "<p>Number of requests: " + \
 		    str(len(reqList)) + "</p>\n"
-		htmlList = htmlList + "<ul>"
+		htmlList = htmlList + "<ol>"
 		for entry in reqList:
 			htmlList = htmlList + "<li><b>" + str(entry[0]) + \
 			    "</b><br/><pre>"+ entry[1] + "</pre></li>\n"
-		htmlList = htmlList + "</ul>"
+		htmlList = htmlList + "</ol>"
 	# Any resource: new random link
 	nextPage = str (random.randint (0,10000))
 	nextUrl = "/" + nextPage
