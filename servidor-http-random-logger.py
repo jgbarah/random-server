@@ -16,6 +16,45 @@ import os
 import datetime
 import email.Utils
 
+def parse (request):
+    """Parse request, get relevant data.
+
+    Currently just returns the resource name.
+
+    """
+    
+    resource = request.split(' ',2)[1]
+    return resource
+
+def process (resource):
+    """Process request.
+
+    Returns HTTP response, ready to send to requester.
+    """
+
+    if resource == "/favicon.ico":
+        httpCode = "404 Not Found"
+        htmlBody = ""
+    else:
+        # Resource name for next url
+        nextPage = str (random.randint (0,100000))
+        nextUrl = "/" + nextPage
+        # HTML body of the page to serve
+        htmlBody = "<!DOCTYPE html><html lang='en'><head>" \
+            + "<meta charset='utf-8'/></head>" \
+            + "<body><h1>It works!</h1>" \
+            + "<p>Next page: <a href='" \
+            + nextUrl + "'>" + nextPage + "</a></p></body></html>"
+        httpCode = "200 OK"
+    content_line = "Content-Length: " + str(len(htmlBody)) + "\r\n"
+    date_line = "Date: " + email.Utils.formatdate(usegmt = True) + "\r\n"
+    httpResponse = "HTTP/1.1 " + httpCode + "\r\n" \
+        + some_HTTPHeaders \
+        + date_line \
+        + content_line + "\r\n" \
+        + htmlBody
+    return httpResponse
+
 # Create a TCP objet socket and bind it to a port
 # We bind to 'localhost', therefore only accepts connections from the
 # same machine
@@ -24,7 +63,7 @@ import email.Utils
 
 myPort = 80
 
-some_HTTPHeaders = "Server: Random/1.0\r\n" + \
+some_HTTPHeaders = "Server: Random/1.0a\r\n" + \
 "Content-Language: en\r\n" + \
 "Content-Type: text/html;charset=utf-8\r\n"
 
@@ -52,32 +91,23 @@ try:
     while True:
         print 'Waiting for connections'
         (recvSocket, address) = mySocket.accept()
+        request = recvSocket.recv(2048)
         print 'HTTP request received:',
         print datetime.datetime.now().isoformat(),
         print address
         print
-        print recvSocket.recv(2048)
-        
-        # Resource name for next url
-        nextPage = str (random.randint (0,100000))
-        nextUrl = "/" + nextPage
-        # HTML body of the page to serve
-        htmlBody = "<!DOCTYPE html><html lang='en'><head>" \
-                + "<meta charset='utf-8'/></head>" \
-                + "<body><h1>It works!</h1>" \
-                + "<p>Next page: <a href='" \
-                + nextUrl + "'>" + nextPage + "</a></p></body></html>"
-        content_line = "Content-Length: " + str(len(htmlBody)) + "\r\n"
-        date_line = "Date: " + email.Utils.formatdate(usegmt = True) + "\r\n"
-        httpResponse = "HTTP/1.1 200 OK\r\n" \
-                       + some_HTTPHeaders \
-                       + date_line \
-                       + content_line + "\r\n" \
-                       + htmlBody
-        #print httpResponse
-        recvSocket.send(httpResponse)
+        print request
+
+        try:
+            resource = parse (request)
+            httpResponse = process(resource)
+            #print httpResponse
+            recvSocket.send(httpResponse)
+        except:
+            # In some cases, a malformed request can come. Abort.
+            print "*** Malformed request?"
         recvSocket.close()
 
 except KeyboardInterrupt:
-    print "Closing binded socket"
+    print "Closing bound socket"
     mySocket.close()
