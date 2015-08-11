@@ -22,7 +22,7 @@ import email.Utils
 # Port should be 80, but since it needs root privileges,
 # let's use one above 1024
 
-myPort = 1234
+myPort = 80
 
 some_HTTPHeaders = "Server: Random/1.0\r\n" + \
 "Content-Language: en\r\n" + \
