@@ -28,7 +28,7 @@ case "$1" in
     echo "Stopping random server"
     echo -n "Stopping... " >> $LOGFILE
     date --iso-8601="seconds" >> $LOGFILE
-    /usr/bin/pkill "/usr/bin/python /home/jgb/random-server/random-server-logger.py"
+    /usr/bin/pkill -f "/usr/bin/python /home/jgb/random-server/random-server-logger.py"
 
     ;;
   *)
