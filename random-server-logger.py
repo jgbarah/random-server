@@ -1,13 +1,14 @@
 #!/usr/bin/python
 
 #
-# Simple HTTP Server Random
+# Simple HTTP Server Random Logger
 # Jesus M. Gonzalez-Barahona
 # jgb @ gsyc.es
 # TSAI and SAT subjects (Universidad Rey Juan Carlos)
-# September 2009
+# 2009 - 2015
 #
-# Returns an HTML page with a random link
+# Returns an HTML page with a random link, and performs some other
+#  few tricks
 
 import socket
 import random
@@ -22,37 +23,61 @@ def parse (request):
     Currently just returns the resource name.
 
     """
-    
-    resource = request.split(' ',2)[1]
-    return resource
 
-def process (resource):
+    components = request.split(' ',2)
+    method = components[0]
+    resource = components[1]
+    return (method, resource)
+
+# Default headers for responses
+default_headers = {
+    "Server": "Random/1.0a",
+    }
+
+def process (method, resource):
     """Process request.
 
     Returns HTTP response, ready to send to requester.
     """
 
-    if resource == "/favicon.ico":
+    headers = default_headers
+    headers["Date"] = email.Utils.formatdate(usegmt = True)
+    if method not in ("GET", "HEAD"):
+        httpCode = "405 Method Not Allowed"
+        body = None
+    elif resource == "/favicon.ico":
         httpCode = "404 Not Found"
-        htmlBody = ""
+        body = None
+    elif resource == "/robots.txt":
+        httpCode = "200 OK"
+        body = "User-agent: *\nAllow: /\n"
+        headers["Content-Type"] = "text/plain;charset=ascii"
     else:
         # Resource name for next url
         nextPage = str (random.randint (0,100000))
         nextUrl = "/" + nextPage
         # HTML body of the page to serve
-        htmlBody = "<!DOCTYPE html><html lang='en'><head>" \
+        body = "<!DOCTYPE html><html lang='en'><head>" \
             + "<meta charset='utf-8'/></head>" \
             + "<body><h1>It works!</h1>" \
             + "<p>Next page: <a href='" \
             + nextUrl + "'>" + nextPage + "</a></p></body></html>"
         httpCode = "200 OK"
-    content_line = "Content-Length: " + str(len(htmlBody)) + "\r\n"
-    date_line = "Date: " + email.Utils.formatdate(usegmt = True) + "\r\n"
+        headers["Content-Language"] = "en"
+        headers["Content-Type"] = "text/html;charset=utf-8"
+        headers["Last-Modified"] = headers["Date"]
+    if body:
+        headers["Content-Length"] = str(len(body))
+    else:
+        headers["Content-Length"] = "0"
+    httpHeaders = ""
+    for header, value in headers.items():
+        httpHeaders = httpHeaders + header + ": " + value + "\r\n"
     httpResponse = "HTTP/1.1 " + httpCode + "\r\n" \
-        + some_HTTPHeaders \
-        + date_line \
-        + content_line + "\r\n" \
-        + htmlBody
+        + httpHeaders + "\r\n" 
+    if body and (method != "HEAD"):
+        httpResponse =  httpResponse + body
+    #print httpResponse
     return httpResponse
 
 # Create a TCP objet socket and bind it to a port
@@ -61,11 +86,7 @@ def process (resource):
 # Port should be 80, but since it needs root privileges,
 # let's use one above 1024
 
-myPort = 80
-
-some_HTTPHeaders = "Server: Random/1.0a\r\n" + \
-"Content-Language: en\r\n" + \
-"Content-Type: text/html;charset=utf-8\r\n"
+myPort = 1234
 
 mySocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 # Let the port be reused if no process is actually using it
@@ -91,7 +112,7 @@ try:
     while True:
         print 'Waiting for connections'
         (recvSocket, address) = mySocket.accept()
-        request = recvSocket.recv(2048)
+        request = recvSocket.recv(4096)
         print 'HTTP request received:',
         print datetime.datetime.now().isoformat(),
         print address
@@ -99,13 +120,15 @@ try:
         print request
 
         try:
-            resource = parse (request)
-            httpResponse = process(resource)
-            #print httpResponse
-            recvSocket.send(httpResponse)
+            (method, resource) = parse (request)
         except:
             # In some cases, a malformed request can come. Abort.
+            resource = None
             print "*** Malformed request?"
+        if resource:
+            response = process(method, resource)
+            #print httpResponse
+            recvSocket.send(response)
         recvSocket.close()
 
 except KeyboardInterrupt:
