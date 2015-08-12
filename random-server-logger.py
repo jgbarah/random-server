@@ -86,7 +86,7 @@ def process (method, resource):
 # Port should be 80, but since it needs root privileges,
 # let's use one above 1024
 
-myPort = 1234
+myPort = 80
 
 mySocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 # Let the port be reused if no process is actually using it
