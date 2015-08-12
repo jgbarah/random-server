@@ -10,18 +10,26 @@
 # Description:       random-server
 ### END INIT INFO
 
+LOGFILE="/var/log/random-server-logger"
+echo $LOGFILE
+touch $LOGFILE
+
 # Carry out specific functions when asked to by the system
 case "$1" in
   start)
     echo "Starting random server "
-    
-    /usr/bin/python  /home/jgb/random-server/random-server-logger.py > /var/log/random-server
+    echo -n "Starting... " >> $LOGFILE
+    date --iso-8601="seconds" >> $LOGFILE
+    /usr/bin/python  /home/jgb/random-server/random-server-logger.py 2>&1 >> $LOGFILE &
 
     ;;
   stop)
-    echo "Stopping randome server"
-
+    echo $LOGFILE
+    echo "Stopping random server"
+    echo -n "Stopping... " >> $LOGFILE
+    date --iso-8601="seconds" >> $LOGFILE
     /usr/bin/pkill "/usr/bin/python /home/jgb/random-server/random-server-logger.py"
+
     ;;
   *)
     echo "Usage: /etc/init.d/random-server {start|stop}"
