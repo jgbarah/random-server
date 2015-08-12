@@ -15,13 +15,13 @@ case "$1" in
   start)
     echo "Starting random server "
     
-    /usr/bin/python  /home/jgb/random-server/servidor-http-random-logger.py > /var/log/random-server
+    /usr/bin/python  /home/jgb/random-server/random-server-logger.py > /var/log/random-server
 
     ;;
   stop)
     echo "Stopping randome server"
 
-    /usr/bin/killall servidor-http-random-logger.py
+    /usr/bin/pkill "/usr/bin/python /home/jgb/random-server/random-server-logger.py"
     ;;
   *)
     echo "Usage: /etc/init.d/random-server {start|stop}"
