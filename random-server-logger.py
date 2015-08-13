@@ -34,6 +34,32 @@ default_headers = {
     "Server": "Random/1.0a",
     }
 
+
+def og_data (number):
+    """Returns HTML with headers with Open Graph data.
+    """
+
+    template = """<meta property="og:title" content="Random Canary {number}" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://canary.libresoft.es/{number}" />
+<meta property="og:description" content="Random canaries all over the place: Now featuring {number}." />
+<meta property="og:site_name" content="Random Canaries" />
+"""
+    html = template.format (number = number)
+    return html
+
+def twitter_card (number):
+    """Returns HTML with headers for a twitter card.
+    """
+
+    template = """<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@jgbarah" />
+<meta name="twitter:title" content="Random Canaries" />
+<meta name="twitter:description" content="Random canaries all over the place: Now featuring {number}." />
+"""
+    html = template.format (number = number)
+    return html
+
 def process (method, resource):
     """Process request.
 
@@ -45,7 +71,7 @@ def process (method, resource):
     if method not in ("GET", "HEAD"):
         httpCode = "405 Method Not Allowed"
         body = None
-    elif resource == "/favicon.ico":
+    elif resource in ["/favicon.ico", "/sitemap.xml"]:
         httpCode = "404 Not Found"
         body = None
     elif resource == "/robots.txt":
@@ -58,9 +84,13 @@ def process (method, resource):
         nextUrl = "/" + nextPage
         # HTML body of the page to serve
         body = "<!DOCTYPE html><html lang='en'><head>" \
-            + "<meta charset='utf-8'/></head>" \
-            + "<body><h1>It works!</h1>" \
-            + "<p>Next page: <a href='" \
+            + "<meta charset='utf-8'/>" \
+            + twitter_card(nextPage) \
+            + og_data(nextPage) \
+            + "<title>Random Canaries</title>" \
+            + "</head>" \
+            + "<body><h1>Random canaries all over the place</h1>" \
+            + "<p>Now featuring: <a href='" \
             + nextUrl + "'>" + nextPage + "</a></p></body></html>"
         httpCode = "200 OK"
         headers["Content-Language"] = "en"
