@@ -42,7 +42,7 @@ def og_data (resource):
     template = """<meta property="og:title" content="Random Canary {resource}" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://canary.libresoft.es/{resource}" />
-<meta property="og:description" content="Random canaries all over the place: Now featuring {resource}." />
+<meta property="og:description" content="Random canaries all over the place. Now featuring: {resource}." />
 <meta property="og:site_name" content="Random Canaries" />
 """
     html = template.format (resource = resource[1:])
@@ -55,7 +55,7 @@ def twitter_card (resource):
     template = """<meta name="twitter:card" content="summary" />
 <meta name="twitter:site" content="@jgbarah" />
 <meta name="twitter:title" content="Random Canaries" />
-<meta name="twitter:description" content="Random canaries all over the place: Now featuring {resource}." />
+<meta name="twitter:description" content="Random canaries all over the place. Now featuring: {resource}." />
 """
     html = template.format (resource = resource[1:])
     return html
@@ -85,8 +85,8 @@ def process (method, resource):
         # HTML body of the page to serve
         body = "<!DOCTYPE html><html lang='en'><head>" \
             + "<meta charset='utf-8'/>" \
-            + twitter_card(nextPage) \
-            + og_data(nextPage) \
+            + twitter_card(resource) \
+            + og_data(resource) \
             + "<title>Random Canaries</title>" \
             + "</head>" \
             + "<body><h1>Random canaries all over the place</h1>" \
