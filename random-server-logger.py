@@ -35,29 +35,29 @@ default_headers = {
     }
 
 
-def og_data (number):
+def og_data (resource):
     """Returns HTML with headers with Open Graph data.
     """
 
-    template = """<meta property="og:title" content="Random Canary {number}" />
+    template = """<meta property="og:title" content="Random Canary {resource}" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://canary.libresoft.es/{number}" />
-<meta property="og:description" content="Random canaries all over the place: Now featuring {number}." />
+<meta property="og:url" content="http://canary.libresoft.es/{resource}" />
+<meta property="og:description" content="Random canaries all over the place: Now featuring {resource}." />
 <meta property="og:site_name" content="Random Canaries" />
 """
-    html = template.format (number = number)
+    html = template.format (resource = resource[1:])
     return html
 
-def twitter_card (number):
+def twitter_card (resource):
     """Returns HTML with headers for a twitter card.
     """
 
     template = """<meta name="twitter:card" content="summary" />
 <meta name="twitter:site" content="@jgbarah" />
 <meta name="twitter:title" content="Random Canaries" />
-<meta name="twitter:description" content="Random canaries all over the place: Now featuring {number}." />
+<meta name="twitter:description" content="Random canaries all over the place: Now featuring {resource}." />
 """
-    html = template.format (number = number)
+    html = template.format (resource = resource[1:])
     return html
 
 def process (method, resource):
