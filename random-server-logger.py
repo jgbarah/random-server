@@ -17,6 +17,47 @@ import os
 import datetime
 import email.Utils
 
+# Template for usual HTML response
+html_template = """<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'/>
+    <title>Random Canaries ({next_page})</title>
+    <meta name='description'
+          content='Random canaries all over the place ({next_page})'>
+    <meta name="robots" content="index, follow">
+    {twitter_card}
+    {og_data}
+  </head>
+  <body>
+    <h1>Random canaries all over the place</h1>
+    <p>Now featuring: <a href='{next_url}'>{next_page}</a></p>
+  </body>
+</html>
+"""
+
+# Template for Open Graph data
+og_template = """
+    <meta property="og:title" content="Random Canary {resource}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="http://canary.libresoft.es/{resource}" />
+    <meta property="og:description" content="Random canaries all over the place. Now featuring: {resource}." />
+    <meta property="og:site_name" content="Random Canaries" />
+"""
+
+# Template for Twitter card
+twitter_template = """
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@jgbarah" />
+    <meta name="twitter:title" content="Random Canary {resource}" />
+    <meta name="twitter:description" content="Random canaries all over the place. Now featuring: {resource}." />
+"""
+
+# Default headers for responses
+default_headers = {
+    "Server": "Random/1.0b",
+    }
+
 def parse (request):
     """Parse request, get relevant data.
 
@@ -29,35 +70,18 @@ def parse (request):
     resource = components[1]
     return (method, resource)
 
-# Default headers for responses
-default_headers = {
-    "Server": "Random/1.0a",
-    }
-
-
 def og_data (resource):
     """Returns HTML with headers with Open Graph data.
     """
 
-    template = """<meta property="og:title" content="Random Canary {resource}" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://canary.libresoft.es/{resource}" />
-<meta property="og:description" content="Random canaries all over the place. Now featuring: {resource}." />
-<meta property="og:site_name" content="Random Canaries" />
-"""
-    html = template.format (resource = resource[1:])
+    html = og_template.format (resource = resource[1:])
     return html
 
 def twitter_card (resource):
     """Returns HTML with headers for a twitter card.
     """
 
-    template = """<meta name="twitter:card" content="summary" />
-<meta name="twitter:site" content="@jgbarah" />
-<meta name="twitter:title" content="Random Canaries" />
-<meta name="twitter:description" content="Random canaries all over the place. Now featuring: {resource}." />
-"""
-    html = template.format (resource = resource[1:])
+    html = twitter_template.format (resource = resource[1:])
     return html
 
 def process (method, resource):
@@ -82,16 +106,12 @@ def process (method, resource):
         # Resource name for next url
         nextPage = str (random.randint (0,100000))
         nextUrl = "/" + nextPage
-        # HTML body of the page to serve
-        body = "<!DOCTYPE html><html lang='en'><head>" \
-            + "<meta charset='utf-8'/>" \
-            + twitter_card(resource) \
-            + og_data(resource) \
-            + "<title>Random Canaries</title>" \
-            + "</head>" \
-            + "<body><h1>Random canaries all over the place</h1>" \
-            + "<p>Now featuring: <a href='" \
-            + nextUrl + "'>" + nextPage + "</a></p></body></html>"
+        body = html_template.format(
+            next_page = nextPage,
+            next_url = nextUrl,
+            twitter_card = twitter_card(resource),
+            og_data = og_data(resource)
+            )
         httpCode = "200 OK"
         headers["Content-Language"] = "en"
         headers["Content-Type"] = "text/html;charset=utf-8"
@@ -147,6 +167,7 @@ try:
         print datetime.datetime.now().isoformat(),
         print address
         print
+        print "*** Received: " + str(len(request)) + " bytes."
         print request
 
         try:
